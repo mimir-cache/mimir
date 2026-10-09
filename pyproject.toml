@@ -1,0 +1,54 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "mimir-cache"
+version = "0.1.0"
+description = "MIMIR - Adaptive Predictive Semantic Cache Framework for Cost-Efficient LLM Applications"
+readme = "README.md"
+requires-python = ">=3.11"
+license = { text = "MIT" }
+authors = [{ name = "EER6689 Group 9, Open University of Sri Lanka" }]
+dependencies = [
+    "fastapi>=0.110",
+    "uvicorn[standard]>=0.29",
+    "pydantic>=2.6",
+    "pydantic-settings>=2.2",
+    "numpy>=1.26",
+]
+
+[project.optional-dependencies]
+# Real embedding model (falls back to a deterministic hash embedder when absent)
+embeddings = ["sentence-transformers>=2.7"]
+# FAISS vector index (falls back to a NumPy brute-force index when absent)
+faiss = ["faiss-cpu>=1.8"]
+# Redis L1 exact-match cache (falls back to in-memory L0 when absent)
+redis = ["redis>=5.0"]
+# ML admission classifier (falls back to heuristic policy when absent)
+ml = ["scikit-learn>=1.4"]
+# Anthropic Claude Haiku LLM fallback (echo stub used when absent)
+llm = ["anthropic>=0.25"]
+# OpenRouter LLM fallback, OpenAI-compatible REST API (echo stub used when absent)
+openrouter = ["httpx>=0.27"]
+dev = ["pytest>=8.0", "pytest-asyncio>=0.23", "httpx>=0.27", "ruff>=0.4"]
+all = ["mimir-cache[embeddings,faiss,redis,ml,llm,openrouter]"]
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/mimir_cache"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+asyncio_mode = "auto"
+pythonpath = ["src", "."]
+
+[tool.ruff]
+line-length = 100
+src = ["src", "tests"]
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "UP", "B", "SIM"]
+
+[tool.ruff.lint.per-file-ignores]
+# B008: `Depends(...)` in argument defaults is the standard FastAPI DI idiom.
+"src/mimir_cache/api.py" = ["B008"]

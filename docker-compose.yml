@@ -1,0 +1,22 @@
+services:
+  redis:
+    image: redis:7-alpine
+    ports:
+      # Host port 6380 — 6379 is commonly taken by other local Redis instances
+      - '6380:6379'
+    volumes:
+      - redisdata:/data
+
+  backend:
+    build: .
+    environment:
+      MIMIR_REDIS_URL: redis://redis:6379/0
+      MIMIR_USE_HASH_EMBEDDER: 'true' # avoids model download in the container demo
+      MIMIR_ADMIN_API_KEY: ${MIMIR_ADMIN_API_KEY:-} # set in the shell or root .env only when admin endpoints are needed
+    ports:
+      - '8000:8000'
+    depends_on:
+      - redis
+
+volumes:
+  redisdata:
