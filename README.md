@@ -39,3 +39,7 @@ Copy `.env.example` to `.env` to configure optional settings. Do not commit `.en
 ## License
 
 Add the project's chosen `LICENSE` file at this repository root before publishing it publicly.
+
+## Pull request review check
+
+This documentation-only change is a test of the repository's pull request review workflow. It does not change backend behavior.

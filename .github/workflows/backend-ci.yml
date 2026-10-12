@@ -1,0 +1,36 @@
+name: Backend CI
+
+on:
+  pull_request:
+    branches: [main]
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  test-and-build:
+    name: Test and build
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v7
+
+      - name: Set up Python
+        uses: actions/setup-python@v7
+        with:
+          python-version: "3.12"
+          cache: pip
+          cache-dependency-path: pyproject.toml
+
+      - name: Install backend and test dependencies
+        run: python -m pip install -e ".[dev]"
+
+      - name: Run test suite
+        run: python -m pytest -q
+
+      - name: Build Docker image
+        run: docker build --tag mimir-backend:ci .
